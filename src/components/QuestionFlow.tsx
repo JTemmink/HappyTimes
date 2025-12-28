@@ -146,7 +146,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
               onClick={handleMarriageResponse}
               className="thai-button-primary text-xl"
             >
-              Oh yes
+              Oh yes, i forgot...
             </button>
             <button
               onClick={handleMarriageResponse}
