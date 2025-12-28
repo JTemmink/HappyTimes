@@ -21,7 +21,12 @@ export const MassageList = ({ latitude, longitude, wantsTreatment }: MassageList
       try {
         setLoading(true);
         setError(null);
-        const results = await searchThaiMassagePlaces(latitude, longitude, searchRadius);
+        
+        // Start search and minimum delay in parallel
+        const [results] = await Promise.all([
+          searchThaiMassagePlaces(latitude, longitude, searchRadius),
+          new Promise(resolve => setTimeout(resolve, 3000)) // Minimum 3 seconds delay
+        ]);
         
         // Add distance to each place
         const placesWithDistance = results.map((place) => ({
