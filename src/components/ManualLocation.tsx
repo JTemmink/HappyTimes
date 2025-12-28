@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { geocodeAddress } from '../utils/geocoding';
 
 interface ManualLocationProps {
   onLocationSet: (lat: number, lng: number) => void;
@@ -6,38 +7,33 @@ interface ManualLocationProps {
 }
 
 export const ManualLocation = ({ onLocationSet, onBack }: ManualLocationProps) => {
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
+  const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [foundLocation, setFoundLocation] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFoundLocation(null);
 
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      setError('Please enter valid numbers');
+    if (!address.trim()) {
+      setError('Please enter an address or city name');
       return;
     }
 
-    if (lat < -90 || lat > 90) {
-      setError('Latitude must be between -90 and 90');
-      return;
+    setLoading(true);
+    try {
+      const result = await geocodeAddress(address);
+      setFoundLocation(result.display_name);
+      // Small delay to show the found location
+      setTimeout(() => {
+        onLocationSet(result.lat, result.lng);
+      }, 500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not find location');
+      setLoading(false);
     }
-
-    if (lng < -180 || lng > 180) {
-      setError('Longitude must be between -180 and 180');
-      return;
-    }
-
-    onLocationSet(lat, lng);
-  };
-
-  const handleOpenMapPicker = () => {
-    // Open Google Maps in a new tab where user can click to get coordinates
-    window.open('https://www.google.com/maps', '_blank');
   };
 
   return (
@@ -57,39 +53,41 @@ export const ManualLocation = ({ onLocationSet, onBack }: ManualLocationProps) =
           <div className="text-6xl mb-4">📍</div>
           <h2 className="thai-title text-3xl mb-4">Choose Your Location</h2>
           <p className="text-gray-700 mb-6">
-            Enter your coordinates or use the map picker to find them
+            Enter an address, city name, or landmark to find Thai massages nearby
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="latitude" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-                Latitude (-90 to 90)
+              <label htmlFor="address" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+                Enter Address or City
               </label>
               <input
-                id="latitude"
-                type="number"
-                step="any"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                placeholder="e.g., 52.3676"
-                className="w-full px-4 py-3 rounded-xl border-2 border-thai-gold focus:border-thai-red focus:ring-2 focus:ring-thai-gold focus:outline-none transition-all"
+                id="address"
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g., Amsterdam, Netherlands or 123 Main St, New York"
+                className="w-full px-4 py-3 rounded-xl border-2 border-thai-gold focus:border-thai-red focus:ring-2 focus:ring-thai-gold focus:outline-none transition-all text-base"
+                disabled={loading}
               />
+              <p className="text-xs text-gray-500 mt-1 text-left">
+                Enter a city name, street address, or landmark
+              </p>
             </div>
 
-            <div>
-              <label htmlFor="longitude" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-                Longitude (-180 to 180)
-              </label>
-              <input
-                id="longitude"
-                type="number"
-                step="any"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                placeholder="e.g., 4.9041"
-                className="w-full px-4 py-3 rounded-xl border-2 border-thai-gold focus:border-thai-red focus:ring-2 focus:ring-thai-gold focus:outline-none transition-all"
-              />
-            </div>
+            {loading && (
+              <div className="flex items-center justify-center gap-2 py-4">
+                <div className="animate-spin text-2xl">🔍</div>
+                <span className="text-sm text-gray-600">Searching for location...</span>
+              </div>
+            )}
+
+            {foundLocation && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-xs text-green-700 font-semibold mb-1">✓ Found:</p>
+                <p className="text-sm text-green-800">{foundLocation}</p>
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -101,24 +99,17 @@ export const ManualLocation = ({ onLocationSet, onBack }: ManualLocationProps) =
               <button
                 type="submit"
                 className="thai-button-primary w-full"
+                disabled={loading || !address.trim()}
               >
-                Use This Location 📍
-              </button>
-
-              <button
-                type="button"
-                onClick={handleOpenMapPicker}
-                className="thai-button-secondary w-full"
-              >
-                Open Map to Find Coordinates 🗺️
+                {loading ? 'Searching...' : 'Search Location 🔍'}
               </button>
             </div>
           </form>
 
           <div className="mt-6 p-4 bg-thai-gold/10 rounded-xl border border-thai-gold/20">
             <p className="text-xs text-gray-600 text-left">
-              <strong>💡 Tip:</strong> Right-click on Google Maps and select "What's here?" to get coordinates. 
-              Or search for your city/address and right-click on the location.
+              <strong>💡 Tip:</strong> You can enter a city name (e.g., "Amsterdam"), 
+              a full address, or a landmark. The app will find the location automatically.
             </p>
           </div>
         </div>
