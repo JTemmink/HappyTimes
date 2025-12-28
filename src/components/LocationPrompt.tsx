@@ -1,9 +1,23 @@
+import { useState } from 'react';
+import { ManualLocation } from './ManualLocation';
+
 interface LocationPromptProps {
   onGrant: () => void;
+  onManualLocation: (lat: number, lng: number) => void;
   error?: string | null;
 }
 
-export const LocationPrompt = ({ onGrant, error }: LocationPromptProps) => {
+export const LocationPrompt = ({ onGrant, onManualLocation, error }: LocationPromptProps) => {
+  const [showManual, setShowManual] = useState(false);
+
+  if (showManual) {
+    return (
+      <ManualLocation
+        onLocationSet={onManualLocation}
+        onBack={() => setShowManual(false)}
+      />
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
       <div className="thai-card thai-pattern max-w-md w-full text-center space-y-6 relative">
@@ -30,12 +44,22 @@ export const LocationPrompt = ({ onGrant, error }: LocationPromptProps) => {
           </div>
         )}
         
-        <button 
-          onClick={onGrant} 
-          className="thai-button-primary w-full mt-4"
-        >
-          Share Location 📍
-        </button>
+        <div className="space-y-3">
+          <button 
+            onClick={onGrant} 
+            className="thai-button-primary w-full"
+          >
+            Share Location 📍
+          </button>
+          
+          <button
+            onClick={() => setShowManual(true)}
+            className="thai-button-secondary w-full"
+          >
+            Choose Location Manually 🗺️
+          </button>
+        </div>
+        
         <p className="text-sm text-gray-500">
           Your location is only used to find massage places and is not stored.
         </p>

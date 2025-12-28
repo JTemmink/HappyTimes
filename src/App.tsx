@@ -11,21 +11,25 @@ function App() {
   const [appState, setAppState] = useState<AppState>('location');
   const [questionsCompleted, setQuestionsCompleted] = useState(false);
   const [wantsTreatment, setWantsTreatment] = useState(false);
+  const [manualPosition, setManualPosition] = useState<{latitude: number; longitude: number} | null>(null);
+
+  // Use manual position if available, otherwise use geolocation position
+  const currentPosition = manualPosition || position;
 
   // Auto-advance to questions when location is ready
   useEffect(() => {
-    if (position && appState === 'location') {
+    if (currentPosition && appState === 'location') {
       setAppState('questions');
     }
-  }, [position, appState]);
+  }, [currentPosition, appState]);
 
   // If we have a position and questions are completed, show results
-  if (position && questionsCompleted) {
-    return <MassageList latitude={position.latitude} longitude={position.longitude} wantsTreatment={wantsTreatment} />;
+  if (currentPosition && questionsCompleted) {
+    return <MassageList latitude={currentPosition.latitude} longitude={currentPosition.longitude} wantsTreatment={wantsTreatment} />;
   }
 
   // If we have a position but questions not yet completed, show questions
-  if (position && !questionsCompleted && appState === 'questions') {
+  if (currentPosition && !questionsCompleted && appState === 'questions') {
     return <QuestionFlow onComplete={(wants) => { setWantsTreatment(wants); setQuestionsCompleted(true); }} />;
   }
 
@@ -52,12 +56,15 @@ function App() {
   }
 
   // Location error or no position - show prompt to request location
-  if (error || !position) {
+  if (error || !currentPosition) {
     return (
       <LocationPrompt
         onGrant={() => {
           // Request location on button click (required for mobile browsers)
           requestLocation();
+        }}
+        onManualLocation={(lat, lng) => {
+          setManualPosition({ latitude: lat, longitude: lng });
         }}
         error={error}
       />
