@@ -6,9 +6,12 @@ interface LocationPromptProps {
 export const LocationPrompt = ({ onGrant, error }: LocationPromptProps) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <div className="thai-card thai-pattern max-w-md w-full text-center space-y-6">
-        <div className="text-6xl mb-4">📍</div>
+      <div className="thai-card thai-pattern max-w-md w-full text-center space-y-6 relative">
+        <div className="text-6xl mb-4 animate-bounce">📍</div>
         <h1 className="thai-title text-4xl mb-4">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
+        <div className="floating-lotus" style={{top: '10%', left: '5%'}}>🌸</div>
+        <div className="floating-lotus" style={{top: '20%', right: '10%', animationDelay: '2s'}}>💆‍♀️</div>
+        <div className="floating-lotus" style={{bottom: '15%', left: '8%', animationDelay: '4s'}}>🌸</div>
         <p className="text-xl font-bold text-thai-red mb-2">
           We need your location
         </p>

@@ -65,9 +65,18 @@ export const MassageList = ({ latitude, longitude, wantsTreatment }: MassageList
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
-        <div className="thai-card max-w-md w-full text-center">
-          <div className="animate-spin text-6xl mb-4">🌸</div>
-          <p className="text-xl font-bold text-thai-red">Searching for Thai massages...</p>
+        <div className="thai-card max-w-md w-full text-center relative">
+          <div className="floating-lotus" style={{top: '10%', left: '10%'}}>💆‍♀️</div>
+          <div className="floating-lotus" style={{top: '15%', right: '15%', animationDelay: '1.5s'}}>🌸</div>
+          <div className="relative z-10">
+            <div className="animate-spin text-6xl mb-4" style={{animationDuration: '2s'}}>💆‍♀️</div>
+            <p className="text-xl font-bold text-thai-red mb-2">Searching for Thai massages...</p>
+            <div className="flex justify-center gap-1 mt-3">
+              <div className="w-2 h-2 bg-thai-gold rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+              <div className="w-2 h-2 bg-thai-red rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              <div className="w-2 h-2 bg-thai-green rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -111,11 +120,15 @@ export const MassageList = ({ latitude, longitude, wantsTreatment }: MassageList
   return (
     <div className="min-h-screen p-6 pb-20">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="thai-title text-5xl mb-2">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
-          <p className="text-xl text-white font-bold drop-shadow-lg">
-            {places.length} Thai massage{places.length !== 1 ? 's' : ''} found within {searchRadius} km
-          </p>
+        <div className="text-center mb-10 relative">
+          <div className="floating-lotus" style={{top: '-20px', left: '5%'}}>🌸</div>
+          <div className="floating-lotus" style={{top: '-10px', right: '8%', animationDelay: '1s'}}>💆‍♀️</div>
+          <h1 className="thai-title text-5xl mb-4 relative z-10">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
+          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30 inline-block">
+            <p className="text-xl text-white font-bold drop-shadow-2xl">
+              {places.length} Thai massage{places.length !== 1 ? 's' : ''} found within {searchRadius} km
+            </p>
+          </div>
         </div>
 
         <div className="space-y-4">
