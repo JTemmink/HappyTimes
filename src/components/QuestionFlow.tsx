@@ -12,6 +12,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   const [showFirstQuestion, setShowFirstQuestion] = useState(true);
   const [showPermissionCheck, setShowPermissionCheck] = useState(false);
   const [showMarriageCheck, setShowMarriageCheck] = useState(false);
+  const [showFunMessage, setShowFunMessage] = useState(false);
 
   const handlePositiveResponse = () => {
     // When user says yes, show permission check first
@@ -45,9 +46,9 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
 
   const handlePermissionResponse = (hasPermission: boolean) => {
     if (hasPermission) {
-      // Has permission, proceed
+      // Has permission, show fun message first
       setShowPermissionCheck(false);
-      onComplete(true);
+      setShowFunMessage(true);
     } else {
       // Didn't ask, show marriage check
       setShowPermissionCheck(false);
@@ -55,11 +56,43 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
     }
   };
 
+  const handleFunMessageContinue = () => {
+    setShowFunMessage(false);
+    onComplete(true);
+  };
+
   const handleMarriageResponse = () => {
     // Either way, proceed (it's a joke after all)
     setShowMarriageCheck(false);
     onComplete(true);
   };
+
+  // Show fun message screen
+  if (showFunMessage) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="thai-card thai-pattern max-w-md w-full text-center space-y-8">
+          <div className="space-y-4 relative z-10">
+            <h1 className="thai-title text-5xl mb-6 font-thai-title">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
+            <div className="relative">
+              <p className="text-3xl font-bold text-thai-gold-dark mb-4 animate-pulse-glow">
+                Have FUN! even if i don't believe
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={handleFunMessageContinue}
+              className="thai-button-primary text-xl"
+            >
+              Continue 🎉
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show permission check screen
   if (showPermissionCheck) {
