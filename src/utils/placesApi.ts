@@ -58,6 +58,139 @@ const extractVicinity = (displayName: string): string => {
   return displayName;
 };
 
+// Overpass API result type
+interface OverpassElement {
+  type: string;
+  id: number;
+  lat?: number;
+  lon?: number;
+  tags?: {
+    name?: string;
+    'addr:street'?: string;
+    'addr:city'?: string;
+    'addr:housenumber'?: string;
+    amenity?: string;
+    shop?: string;
+    leisure?: string;
+  };
+}
+
+interface OverpassResponse {
+  elements: OverpassElement[];
+}
+
+// Search using Overpass API for POIs with specific tags
+const searchOverpassAPI = async (
+  latitude: number,
+  longitude: number,
+  radiusKm: number
+): Promise<Array<NominatimResult & { distance: number }>> => {
+  // Calculate bounding box for Overpass
+  const bboxSize = radiusKm / 111; // 1 degree ≈ 111 km
+  const south = latitude - bboxSize;
+  const north = latitude + bboxSize;
+  const west = longitude - bboxSize;
+  const east = longitude + bboxSize;
+
+  // Overpass query to find spas, massage places, wellness centers
+  // Using multiple tag combinations
+  const query = `
+    [out:json][timeout:25];
+    (
+      node["amenity"="spa"](${south},${west},${north},${east});
+      node["shop"="massage"](${south},${west},${north},${east});
+      node["leisure"="spa"](${south},${west},${north},${east});
+      way["amenity"="spa"](${south},${west},${north},${east});
+      way["shop"="massage"](${south},${west},${north},${east});
+      way["leisure"="spa"](${south},${west},${north},${east});
+      relation["amenity"="spa"](${south},${west},${north},${east});
+      relation["shop"="massage"](${south},${west},${north},${east});
+      relation["leisure"="spa"](${south},${west},${north},${east});
+    );
+    out center meta;
+  `;
+
+  try {
+    const response = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: query,
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data: OverpassResponse = await response.json();
+
+    return data.elements
+      .filter((element) => {
+        const tags = element.tags || {};
+        const name = (tags.name || '').toLowerCase();
+        // Filter for massage/spa related
+        return (
+          tags.amenity === 'spa' ||
+          tags.shop === 'massage' ||
+          tags.leisure === 'spa' ||
+          name.includes('massage') ||
+          name.includes('spa') ||
+          name.includes('thai') ||
+          name.includes('wellness')
+        );
+      })
+      .map((element) => {
+        // Get coordinates: use center for ways/relations, direct lat/lon for nodes
+        let lat: number, lng: number;
+        if (element.type === 'node' && element.lat && element.lon) {
+          lat = element.lat;
+          lng = element.lon;
+        } else if (element.type === 'way' || element.type === 'relation') {
+          // For ways/relations, Overpass returns center coordinates in tags or we need to calculate
+          // Since we asked for "out center", coordinates should be available
+          if (element.lat && element.lon) {
+            lat = element.lat;
+            lng = element.lon;
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+
+        const distance = calculateDistance(latitude, longitude, lat, lng);
+        const tags = element.tags || {};
+        const name = tags.name || 'Massage';
+        const street = tags['addr:street'] || '';
+        const houseNumber = tags['addr:housenumber'] || '';
+        const city = tags['addr:city'] || '';
+
+        let address = '';
+        if (street) {
+          address = houseNumber ? `${street} ${houseNumber}` : street;
+          if (city) address += `, ${city}`;
+        }
+
+        const display_name = address || name;
+
+        return {
+          place_id: element.id,
+          name,
+          display_name,
+          lat: lat.toString(),
+          lon: lng.toString(),
+          type: tags.amenity || tags.shop || tags.leisure || 'massage',
+          distance,
+        };
+      })
+      .filter((r): r is NominatimResult & { distance: number } => r !== null);
+  } catch (error) {
+    console.error('Error searching Overpass API:', error);
+    return [];
+  }
+};
+
 // Helper function to search with a specific query
 const searchWithQuery = async (
   query: string,
@@ -120,19 +253,31 @@ export const searchThaiMassagePlaces = async (
     'relaxation center'
   ];
 
-  // Search with all queries in parallel
-  const allResults = await Promise.all(
-    searchQueries.map(query => searchWithQuery(query, bbox, latitude, longitude))
-  );
+  // Search with both Nominatim and Overpass API in parallel for maximum coverage
+  const [nominatimResults, overpassResults] = await Promise.all([
+    Promise.all(searchQueries.map(query => searchWithQuery(query, bbox, latitude, longitude))),
+    searchOverpassAPI(latitude, longitude, radiusKm)
+  ]);
 
-  // Combine and deduplicate results by place_id
-  const resultMap = new Map<number, NominatimResult & { distance: number }>();
+  // Combine all results
+  const allResults = [...nominatimResults.flat(), ...overpassResults];
+
+  // Combine and deduplicate results by name+location (since different APIs may have different IDs)
+  const resultMap = new Map<string, NominatimResult & { distance: number }>();
   
   allResults.flat().forEach((result) => {
-    const existing = resultMap.get(result.place_id);
+    // Create a unique key based on name and approximate location (rounded to 4 decimals ≈ 11 meters)
+    const lat = parseFloat(result.lat).toFixed(4);
+    const lng = parseFloat(result.lon).toFixed(4);
+    const key = `${(result.name || '').toLowerCase().trim()}_${lat}_${lng}`;
+    
+    const existing = resultMap.get(key);
     // Keep the result with the closest match to "thai massage" or the closest distance
-    if (!existing || result.name?.toLowerCase().includes('thai') || result.distance < existing.distance) {
-      resultMap.set(result.place_id, result);
+    if (!existing || 
+        result.name?.toLowerCase().includes('thai') && !existing.name?.toLowerCase().includes('thai') ||
+        (result.name?.toLowerCase().includes('thai') === existing.name?.toLowerCase().includes('thai') && 
+         result.distance < existing.distance)) {
+      resultMap.set(key, result);
     }
   });
 
