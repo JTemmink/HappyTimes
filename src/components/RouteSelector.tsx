@@ -1,13 +1,37 @@
+import { useState, useEffect } from 'react';
 import { Place, getRouteUrl } from '../utils/placesApi';
+import { generateMassageDescription, parseStrikethroughText } from '../utils/openaiApi';
 
 interface RouteSelectorProps {
   place: Place;
   userLat: number;
   userLng: number;
+  wantsTreatment: boolean;
   onBack: () => void;
 }
 
-export const RouteSelector = ({ place, userLat, userLng, onBack }: RouteSelectorProps) => {
+export const RouteSelector = ({ place, userLat, userLng, wantsTreatment, onBack }: RouteSelectorProps) => {
+  const [description, setDescription] = useState<string | null>(null);
+  const [loadingDescription, setLoadingDescription] = useState(false);
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDescription = async () => {
+      setLoadingDescription(true);
+      setDescriptionError(null);
+      try {
+        const desc = await generateMassageDescription(place.name, wantsTreatment);
+        setDescription(desc);
+      } catch (error) {
+        console.error('Error generating description:', error);
+        setDescriptionError('Could not generate description');
+      } finally {
+        setLoadingDescription(false);
+      }
+    };
+
+    fetchDescription();
+  }, [place.name, wantsTreatment]);
   const handleRoute = (mode: 'walking' | 'driving') => {
     const url = getRouteUrl(
       place.geometry.location.lat,
@@ -39,6 +63,33 @@ export const RouteSelector = ({ place, userLat, userLng, onBack }: RouteSelector
               <span className="text-gray-600">({place.user_ratings_total} reviews)</span>
             </div>
           )}
+
+          {/* AI Generated Description */}
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <p className="text-sm font-semibold text-thai-red mb-2">💬 AI Description:</p>
+            {loadingDescription && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="animate-spin text-lg">🌸</div>
+                <span className="text-sm">Generating witty description...</span>
+              </div>
+            )}
+            {descriptionError && (
+              <p className="text-sm text-gray-500 italic">{descriptionError}</p>
+            )}
+            {description && !loadingDescription && (
+              <p className="text-sm text-gray-700 italic leading-relaxed">
+                {parseStrikethroughText(description).map((part, index) => 
+                  part.strikethrough ? (
+                    <span key={index} className="line-through text-gray-500">
+                      {part.text}
+                    </span>
+                  ) : (
+                    <span key={index}>{part.text}</span>
+                  )
+                )}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="border-t border-gray-200 pt-6 space-y-4">

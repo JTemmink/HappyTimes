@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { QUESTIONS, Question } from '../types';
 
 interface QuestionFlowProps {
-  onComplete: () => void;
+  onComplete: (wantsTreatment: boolean) => void;
 }
 
 export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [showFirstQuestion, setShowFirstQuestion] = useState(true);
 
-  const handleFirstQuestion = (wantsTreatment: boolean) => {
-    if (wantsTreatment) {
-      onComplete();
+  const handleFirstQuestion = (wants: boolean) => {
+    if (wants) {
+      onComplete(true);
     } else {
       setShowFirstQuestion(false);
       setCurrentQuestionIndex(0);
@@ -26,14 +26,14 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
         lowerOption.includes('meatballs') || lowerOption.includes('wheels') || lowerOption.includes('cheese') ||
         lowerOption.includes('kick') || lowerOption.includes('water') || lowerOption.includes('music')) {
       // User chooses treatment
-      onComplete();
+      onComplete(true);
     } else {
       // User still chooses no, next question
       if (currentQuestionIndex < QUESTIONS.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        // Last question done, proceed to results anyway
-        onComplete();
+        // Last question done, proceed to results anyway (still false)
+        onComplete(false);
       }
     }
   };

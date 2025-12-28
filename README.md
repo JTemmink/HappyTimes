@@ -18,19 +18,32 @@ A humorous React web app to find Thai massage places near you.
 npm install
 ```
 
-2. Start development server:
+2. Create a `.env` file for OpenAI API (optional but recommended):
+```bash
+VITE_OPENAI_API_KEY=your_openai_api_key_here
+```
+
+3. Start development server:
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Build for production:
 ```bash
 npm run build
 ```
 
 ## APIs
 
-The app uses **completely free APIs** without API keys:
+The app uses **mostly free APIs**:
+
+### OpenAI API (Optional)
+- Used for generating funny, witty descriptions of massage places
+- Requires an API key from [OpenAI](https://platform.openai.com/)
+- If not provided, description feature will show an error message
+- Add `VITE_OPENAI_API_KEY` to your `.env` file
+
+### Free APIs (No keys required):
 
 ### OpenStreetMap Nominatim
 - **Completely free**, no API key needed

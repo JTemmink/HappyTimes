@@ -6,9 +6,10 @@ import { RouteSelector } from './RouteSelector';
 interface MassageListProps {
   latitude: number;
   longitude: number;
+  wantsTreatment: boolean;
 }
 
-export const MassageList = ({ latitude, longitude }: MassageListProps) => {
+export const MassageList = ({ latitude, longitude, wantsTreatment }: MassageListProps) => {
   const [places, setPlaces] = useState<PlaceWithDistance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
         place={selectedPlace}
         userLat={latitude}
         userLng={longitude}
+        wantsTreatment={wantsTreatment}
         onBack={() => setSelectedPlace(null)}
       />
     );

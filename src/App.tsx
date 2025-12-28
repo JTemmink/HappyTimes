@@ -10,6 +10,7 @@ function App() {
   const { position, error, loading, requestLocation } = useGeolocation();
   const [appState, setAppState] = useState<AppState>('location');
   const [questionsCompleted, setQuestionsCompleted] = useState(false);
+  const [wantsTreatment, setWantsTreatment] = useState(false);
 
   // Auto-advance to questions when location is ready
   useEffect(() => {
@@ -20,12 +21,12 @@ function App() {
 
   // If we have a position and questions are completed, show results
   if (position && questionsCompleted) {
-    return <MassageList latitude={position.latitude} longitude={position.longitude} />;
+    return <MassageList latitude={position.latitude} longitude={position.longitude} wantsTreatment={wantsTreatment} />;
   }
 
   // If we have a position but questions not yet completed, show questions
   if (position && !questionsCompleted && appState === 'questions') {
-    return <QuestionFlow onComplete={() => setQuestionsCompleted(true)} />;
+    return <QuestionFlow onComplete={(wants) => { setWantsTreatment(wants); setQuestionsCompleted(true); }} />;
   }
 
   // Location loading state
