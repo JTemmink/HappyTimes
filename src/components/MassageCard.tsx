@@ -42,11 +42,11 @@ export const MassageCard = ({ place, onSelect }: MassageCardProps) => {
         </div>
         <div className="text-right ml-4">
           <p className="text-2xl font-bold text-thai-green">{distance} km</p>
-          <p className="text-sm text-gray-500">afstand</p>
+          <p className="text-sm text-gray-500">distance</p>
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-gray-200">
-        <span className="text-thai-gold-dark font-semibold">📍 Tap om route te zien</span>
+        <span className="text-thai-gold-dark font-semibold">📍 Tap to see route</span>
       </div>
     </div>
   );

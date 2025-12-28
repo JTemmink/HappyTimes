@@ -9,16 +9,16 @@ export const LocationPrompt = ({ onGrant }: LocationPromptProps) => {
         <div className="text-6xl mb-4">📍</div>
         <h1 className="thai-title text-4xl mb-4">🌸 HappyTimes 🌸</h1>
         <p className="text-xl font-bold text-thai-red mb-2">
-          We hebben je locatie nodig
+          We need your location
         </p>
         <p className="text-gray-700">
-          Om Thai massages in jouw buurt te vinden, hebben we toegang tot je locatie nodig.
+          To find Thai massages near you, we need access to your location.
         </p>
         <button onClick={onGrant} className="thai-button-primary w-full mt-4">
-          Locatie delen 📍
+          Share Location 📍
         </button>
         <p className="text-sm text-gray-500">
-          Je locatie wordt alleen gebruikt om massage plekken te vinden en wordt niet opgeslagen.
+          Your location is only used to find massage places and is not stored.
         </p>
       </div>
     </div>

@@ -18,7 +18,7 @@ export const useGeolocation = (): UseGeolocationReturn => {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setError('Geolocatie wordt niet ondersteund door je browser');
+      setError('Geolocation is not supported by your browser');
       setLoading(false);
       return;
     }
@@ -33,16 +33,16 @@ export const useGeolocation = (): UseGeolocationReturn => {
         setError(null);
       },
       (geoError) => {
-        let errorMessage = 'Kan je locatie niet bepalen';
+        let errorMessage = 'Unable to determine your location';
         switch (geoError.code) {
           case geoError.PERMISSION_DENIED:
-            errorMessage = 'Locatie toegang geweigerd';
+            errorMessage = 'Location access denied';
             break;
           case geoError.POSITION_UNAVAILABLE:
-            errorMessage = 'Locatie informatie niet beschikbaar';
+            errorMessage = 'Location information unavailable';
             break;
           case geoError.TIMEOUT:
-            errorMessage = 'Locatie request timeout';
+            errorMessage = 'Location request timeout';
             break;
         }
         setError(errorMessage);

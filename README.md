@@ -1,19 +1,19 @@
 # 🌸 HappyTimes - Thai Massage Finder
 
-Een humoristische React web app om Thai massage plekken in je buurt te vinden.
+A humorous React web app to find Thai massage places near you.
 
 ## Features
 
-- 📍 Automatische locatie detectie
-- 😄 Grappige vragen flow met "Happy New Years treatment"
-- 🔍 Zoekt Thai massages binnen 5 km
-- ⭐ Toont reviews en sterren
-- 🗺️ Routebeschrijving naar keuze (wandelen of auto)
-- 🎨 Volledig Thai-themed design
+- 📍 Automatic location detection
+- 😄 Funny question flow with "Happy New Years treatment"
+- 🔍 Searches for Thai massages within 5 km
+- ⭐ Shows reviews and ratings
+- 🗺️ Route directions to choose from (walking or driving)
+- 🎨 Fully Thai-themed design
 
 ## Setup
 
-1. Installeer dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
@@ -21,34 +21,34 @@ npm install
 2. Start development server:
 ```bash
 npm run dev
-```npm 
+```
 
-3. Build voor productie:
+3. Build for production:
 ```bash
 npm run build
 ```
 
 ## APIs
 
-De app gebruikt **volledig gratis APIs** zonder API keys:
+The app uses **completely free APIs** without API keys:
 
 ### OpenStreetMap Nominatim
-- **Volledig gratis**, geen API key nodig
-- Gebruikt voor het zoeken naar Thai massage plekken
+- **Completely free**, no API key needed
+- Used for searching Thai massage places
 - [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)
 
 ### OpenStreetMap Routing
-- **Volledig gratis**, geen API key nodig
-- Gebruikt voor routebeschrijvingen (wandelen/auto)
+- **Completely free**, no API key needed
+- Used for route directions (walking/driving)
 
-## Gebruik
+## Usage
 
-1. Open de app in je browser
-2. Geef locatie toegang
-3. Beantwoord de grappige vragen
-4. Kies een massage plek uit de lijst
-5. Selecteer route type (wandelen/auto)
-6. Je wordt doorgestuurd naar OpenStreetMap voor de routebeschrijving
+1. Open the app in your browser
+2. Grant location access
+3. Answer the funny questions
+4. Choose a massage place from the list
+5. Select route type (walking/driving)
+6. You will be redirected for directions
 
 ## Technologie
 

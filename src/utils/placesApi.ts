@@ -58,15 +58,15 @@ const extractVicinity = (displayName: string): string => {
   return displayName;
 };
 
-// Search using OpenStreetMap Nominatim API (volledig gratis, geen key nodig)
+// Search using OpenStreetMap Nominatim API (completely free, no key needed)
 export const searchThaiMassagePlaces = async (
   latitude: number,
   longitude: number,
   _radius: number = 5000
 ): Promise<Place[]> => {
-  // Nominatim search met bounding box voor radius filtering
-  // We maken een bbox van ongeveer 5km rond de locatie
-  const bboxSize = 0.045; // Ongeveer 5km in graden (ongeveer)
+  // Nominatim search with bounding box for radius filtering
+  // We create a bbox of approximately 5km around the location
+  const bboxSize = 0.045; // Approximately 5km in degrees (approximate)
   
   const bbox = [
     longitude - bboxSize, // min lon
@@ -75,24 +75,24 @@ export const searchThaiMassagePlaces = async (
     latitude + bboxSize,  // max lat
   ].join(',');
 
-  // Zoek naar "thai massage" in de buurt
+  // Search for "thai massage" nearby
   const query = 'thai massage';
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=50&bounded=1&viewbox=${bbox}&bzoom=15&addressdetails=1`;
 
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'HappyTimes/1.0 (Thai Massage Finder)', // Nominatim vereist User-Agent
+        'User-Agent': 'HappyTimes/1.0 (Thai Massage Finder)', // Nominatim requires User-Agent
       },
     });
 
     if (!response.ok) {
-      throw new Error('Kan geen verbinding maken met de zoek service');
+      throw new Error('Unable to connect to search service');
     }
 
     const data: NominatimResult[] = await response.json();
 
-    // Converteer Nominatim results naar Place format
+    // Convert Nominatim results to Place format
     const places: Place[] = data
       .map((result) => {
         const lat = parseFloat(result.lat);
@@ -102,7 +102,7 @@ export const searchThaiMassagePlaces = async (
         return {
           place_id: result.place_id.toString(),
           name: result.name || result.display_name.split(',')[0] || 'Thai Massage',
-          rating: 0, // Nominatim heeft geen ratings, we gebruiken 0
+          rating: 0, // Nominatim doesn't have ratings, we use 0
           user_ratings_total: 0,
           vicinity: extractVicinity(result.display_name),
           geometry: {
@@ -111,7 +111,7 @@ export const searchThaiMassagePlaces = async (
               lng,
             },
           },
-          distance, // Tijdelijk voor filtering
+          distance, // Temporary for filtering
         };
       })
       .filter((place) => place.distance <= 5) // Max 5km
@@ -121,11 +121,11 @@ export const searchThaiMassagePlaces = async (
     return places;
   } catch (error) {
     console.error('Error fetching places:', error);
-    throw new Error('Er ging iets mis bij het zoeken naar massage plekken. Probeer het later opnieuw.');
+    throw new Error('Something went wrong while searching for massage places. Please try again later.');
   }
 };
 
-// Gebruik gratis routing via externe services
+// Use free routing via external services
 export const getRouteUrl = (
   destinationLat: number,
   destinationLng: number,
@@ -133,8 +133,8 @@ export const getRouteUrl = (
   userLng: number,
   travelMode: 'walking' | 'driving' = 'driving'
 ): string => {
-  // Google Maps routing links werken zonder API key (alleen voor routing links, niet voor Places API)
-  // Dit is volledig gratis en vereist geen authenticatie
+  // Google Maps routing links work without API key (only for routing links, not for Places API)
+  // This is completely free and requires no authentication
   const mode = travelMode === 'walking' ? 'walking' : 'driving';
   return `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${destinationLat},${destinationLng}&travelmode=${mode}`;
 };

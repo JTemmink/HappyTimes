@@ -18,29 +18,29 @@ function App() {
     }
   }, [position, appState]);
 
-  // Als we een positie hebben en vragen zijn afgerond, toon resultaten
+  // If we have a position and questions are completed, show results
   if (position && questionsCompleted) {
     return <MassageList latitude={position.latitude} longitude={position.longitude} />;
   }
 
-  // Als we een positie hebben maar vragen nog niet afgerond, toon vragen
+  // If we have a position but questions not yet completed, show questions
   if (position && !questionsCompleted && appState === 'questions') {
     return <QuestionFlow onComplete={() => setQuestionsCompleted(true)} />;
   }
 
-  // Locatie loading state
+  // Location loading state
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <div className="thai-card max-w-md w-full text-center">
           <div className="animate-spin text-6xl mb-4">🌸</div>
-          <p className="text-xl font-bold text-thai-red">Locatie bepalen...</p>
+          <p className="text-xl font-bold text-thai-red">Determining location...</p>
         </div>
       </div>
     );
   }
 
-  // Locatie error of geen positie
+  // Location error or no position
   if (error || !position) {
     return (
       <LocationPrompt

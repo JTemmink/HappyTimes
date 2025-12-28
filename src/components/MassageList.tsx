@@ -34,7 +34,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
         setPlaces(placesWithDistance);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Er ging iets mis bij het zoeken');
+        setError(err instanceof Error ? err.message : 'Something went wrong while searching');
         console.error('Error fetching places:', err);
       } finally {
         setLoading(false);
@@ -60,7 +60,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <div className="thai-card max-w-md w-full text-center">
           <div className="animate-spin text-6xl mb-4">🌸</div>
-          <p className="text-xl font-bold text-thai-red">Zoeken naar Thai massages...</p>
+          <p className="text-xl font-bold text-thai-red">Searching for Thai massages...</p>
         </div>
       </div>
     );
@@ -72,7 +72,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
         <div className="thai-card max-w-md w-full text-center">
           <p className="text-xl font-bold text-thai-red mb-4">⚠️ {error}</p>
           <p className="text-gray-600">
-            Probeer het later opnieuw of controleer je internetverbinding.
+            Please try again later or check your internet connection.
           </p>
         </div>
       </div>
@@ -84,8 +84,8 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <div className="thai-card max-w-md w-full text-center">
           <p className="text-2xl font-bold text-thai-red mb-4">😔</p>
-          <p className="text-xl font-bold text-thai-red mb-2">Geen Thai massages gevonden</p>
-          <p className="text-gray-600">Er zijn binnen 5 km geen Thai massage plekken gevonden.</p>
+          <p className="text-xl font-bold text-thai-red mb-2">No Thai massages found</p>
+          <p className="text-gray-600">No Thai massage places found within 5 km.</p>
         </div>
       </div>
     );
@@ -97,7 +97,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
         <div className="text-center mb-8">
           <h1 className="thai-title text-5xl mb-2">🌸 HappyTimes 🌸</h1>
           <p className="text-xl text-white font-bold drop-shadow-lg">
-            {places.length} Thai massage{places.length !== 1 ? 's' : ''} gevonden binnen 5 km
+            {places.length} Thai massage{places.length !== 1 ? 's' : ''} found within 5 km
           </p>
         </div>
 

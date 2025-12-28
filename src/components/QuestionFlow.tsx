@@ -19,17 +19,20 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   };
 
   const handleFollowUpQuestion = (option: string) => {
-    // Bij elke optie gaan we door, maar als iemand kiest voor de "ja" variant,
-    // kunnen we doorgaan, bij "nee" variant gaan we door naar volgende vraag
-    if (option.includes('!') || option.toLowerCase().includes('wil') || option.toLowerCase().includes('geef')) {
-      // Gebruiker kiest voor behandeling
+    // We continue with any option, but if someone chooses the "yes" variant,
+    // we can proceed, with the "no" variant we continue to the next question
+    const lowerOption = option.toLowerCase();
+    if (option.includes('!') || lowerOption.includes('want') || lowerOption.includes('give') || 
+        lowerOption.includes('meatballs') || lowerOption.includes('wheels') || lowerOption.includes('cheese') ||
+        lowerOption.includes('kick') || lowerOption.includes('water') || lowerOption.includes('music')) {
+      // User chooses treatment
       onComplete();
     } else {
-      // Gebruiker kiest nog steeds nee, volgende vraag
+      // User still chooses no, next question
       if (currentQuestionIndex < QUESTIONS.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        // Laatste vraag geweest, toch maar door naar resultaten
+        // Last question done, proceed to results anyway
         onComplete();
       }
     }
@@ -41,7 +44,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
         <div className="thai-card thai-pattern max-w-md w-full text-center space-y-8">
           <div className="space-y-4">
             <h1 className="thai-title text-5xl mb-4">🌸 HappyTimes 🌸</h1>
-            <p className="text-2xl font-bold text-thai-red">Wil je een Thai massage met</p>
+            <p className="text-2xl font-bold text-thai-red">Would you like a Thai massage with</p>
             <p className="text-4xl font-bold text-thai-gold-dark animate-pulse">"Happy New Years treatment"?</p>
           </div>
           
@@ -50,13 +53,13 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
               onClick={() => handleFirstQuestion(true)}
               className="thai-button-primary"
             >
-              Ja, graag! 🎉
+              Yes, please! 🎉
             </button>
             <button
               onClick={() => handleFirstQuestion(false)}
               className="thai-button-secondary"
             >
-              Nee, dank je
+              No, thanks
             </button>
           </div>
         </div>
@@ -90,7 +93,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
         </div>
         
         <p className="text-sm text-gray-500">
-          Vraag {currentQuestionIndex + 1} van {QUESTIONS.length}
+          Question {currentQuestionIndex + 1} of {QUESTIONS.length}
         </p>
       </div>
     </div>

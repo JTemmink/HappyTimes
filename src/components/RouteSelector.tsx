@@ -26,7 +26,7 @@ export const RouteSelector = ({ place, userLat, userLng, onBack }: RouteSelector
           onClick={onBack}
           className="text-left text-thai-red hover:text-thai-red-dark font-bold mb-4"
         >
-          ← Terug
+          ← Back
         </button>
 
         <div className="space-y-4">
@@ -42,25 +42,25 @@ export const RouteSelector = ({ place, userLat, userLng, onBack }: RouteSelector
         </div>
 
         <div className="border-t border-gray-200 pt-6 space-y-4">
-          <p className="text-xl font-bold text-thai-red">Hoe wil je erheen?</p>
+          <p className="text-xl font-bold text-thai-red">How would you like to get there?</p>
           
           <button
             onClick={() => handleRoute('walking')}
             className="thai-button-primary w-full"
           >
-            🚶 Wandelen
+            🚶 Walking
           </button>
           
           <button
             onClick={() => handleRoute('driving')}
             className="thai-button-secondary w-full"
           >
-            🚗 Auto
+            🚗 Driving
           </button>
         </div>
 
         <p className="text-sm text-gray-500 mt-4">
-          Je wordt doorgestuurd voor de routebeschrijving
+          You will be redirected for directions
         </p>
       </div>
     </div>
