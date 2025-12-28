@@ -43,7 +43,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
       <div className="flex flex-col items-center justify-center min-h-screen p-6">
         <div className="thai-card thai-pattern max-w-md w-full text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="thai-title text-5xl mb-4">🌸 HappyTimes 🌸</h1>
+            <h1 className="thai-title text-5xl mb-4">🌸 Jovan Happy Times Thai Massage Finder 🌸</h1>
             <p className="text-2xl font-bold text-thai-red">Would you like a Thai massage with</p>
             <p className="text-4xl font-bold text-thai-gold-dark animate-pulse">"Happy New Years treatment"?</p>
           </div>

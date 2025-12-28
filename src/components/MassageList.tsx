@@ -95,7 +95,7 @@ export const MassageList = ({ latitude, longitude }: MassageListProps) => {
     <div className="min-h-screen p-6 pb-20">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="thai-title text-5xl mb-2">🌸 HappyTimes 🌸</h1>
+          <h1 className="thai-title text-5xl mb-2">🌸 Jovan Happy Times Thai Massage Finder 🌸</h1>
           <p className="text-xl text-white font-bold drop-shadow-lg">
             {places.length} Thai massage{places.length !== 1 ? 's' : ''} found within 5 km
           </p>
