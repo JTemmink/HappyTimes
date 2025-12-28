@@ -62,11 +62,11 @@ const extractVicinity = (displayName: string): string => {
 export const searchThaiMassagePlaces = async (
   latitude: number,
   longitude: number,
-  _radius: number = 5000
+  radiusKm: number = 5
 ): Promise<Place[]> => {
   // Nominatim search with bounding box for radius filtering
-  // We create a bbox of approximately 5km around the location
-  const bboxSize = 0.045; // Approximately 5km in degrees (approximate)
+  // Convert km to approximate degrees (1 degree ≈ 111 km)
+  const bboxSize = (radiusKm / 111) * 1.2; // Add 20% buffer for better results
   
   const bbox = [
     longitude - bboxSize, // min lon
@@ -77,7 +77,7 @@ export const searchThaiMassagePlaces = async (
 
   // Search for "thai massage" nearby
   const query = 'thai massage';
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=50&bounded=1&viewbox=${bbox}&bzoom=15&addressdetails=1`;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=100&bounded=1&viewbox=${bbox}&bzoom=10&addressdetails=1`;
 
   try {
     const response = await fetch(url, {
@@ -114,7 +114,7 @@ export const searchThaiMassagePlaces = async (
           distance, // Temporary for filtering
         };
       })
-      .filter((place) => place.distance <= 5) // Max 5km
+      .filter((place) => place.distance <= radiusKm) // Filter by radius
       .sort((a, b) => a.distance - b.distance)
       .map(({ distance, ...place }) => place); // Remove distance from final result
 
