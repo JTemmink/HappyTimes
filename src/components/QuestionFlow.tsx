@@ -18,17 +18,13 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
     }
   };
 
-  const handleFollowUpQuestion = (option: string) => {
-    // We continue with any option, but if someone chooses the "yes" variant,
-    // we can proceed, with the "no" variant we continue to the next question
-    const lowerOption = option.toLowerCase();
-    if (option.includes('!') || lowerOption.includes('want') || lowerOption.includes('give') || 
-        lowerOption.includes('meatballs') || lowerOption.includes('wheels') || lowerOption.includes('cheese') ||
-        lowerOption.includes('kick') || lowerOption.includes('water') || lowerOption.includes('music')) {
-      // User chooses treatment
+  const handleFollowUpQuestion = (isOption1: boolean) => {
+    // Option 1 is always the "yes" variant, option 2 is always the "no" variant
+    if (isOption1) {
+      // User chooses treatment (yes variant)
       onComplete(true);
     } else {
-      // User still chooses no, next question
+      // User still chooses no, go to next question
       if (currentQuestionIndex < QUESTIONS.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
@@ -79,13 +75,13 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
         
         <div className="flex flex-col gap-4">
           <button
-            onClick={() => handleFollowUpQuestion(currentQuestion.option1)}
+            onClick={() => handleFollowUpQuestion(true)}
             className="thai-button-primary"
           >
             {currentQuestion.option1}
           </button>
           <button
-            onClick={() => handleFollowUpQuestion(currentQuestion.option2)}
+            onClick={() => handleFollowUpQuestion(false)}
             className="thai-button-secondary"
           >
             {currentQuestion.option2}
