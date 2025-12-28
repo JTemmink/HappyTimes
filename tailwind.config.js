@@ -17,7 +17,8 @@ export default {
         },
       },
       fontFamily: {
-        'thai': ['Noto Sans Thai', 'sans-serif'],
+        'thai': ['Sarabun', 'Noto Sans Thai', 'sans-serif'],
+        'thai-title': ['Sarabun', 'Noto Sans Thai', 'sans-serif'],
       },
     },
   },

@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+  }
+  
   body {
     @apply bg-gradient-to-br from-thai-red via-thai-gold to-thai-green min-h-screen;
-    font-family: 'Noto Sans Thai', sans-serif;
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
     position: relative;
     overflow-x: hidden;
   }
@@ -126,13 +130,24 @@
   }
   
   .thai-title {
-    font-family: 'Noto Sans Thai', sans-serif;
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
     @apply text-4xl font-bold text-thai-red drop-shadow-2xl relative;
     text-shadow: 
       2px 2px 0px rgba(255, 215, 0, 0.8),
       4px 4px 8px rgba(0, 0, 0, 0.3),
       0 0 20px rgba(255, 215, 0, 0.5);
     letter-spacing: 0.5px;
+    font-weight: 800;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    font-weight: 700;
+  }
+  
+  button {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    font-weight: 600;
   }
   
   .floating-lotus {
