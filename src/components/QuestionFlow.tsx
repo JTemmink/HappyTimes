@@ -46,15 +46,18 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   const handlePermissionResponse = (hasPermission: boolean) => {
     if (hasPermission) {
       // Has permission, proceed
+      setShowPermissionCheck(false);
       onComplete(true);
     } else {
       // Didn't ask, show marriage check
+      setShowPermissionCheck(false);
       setShowMarriageCheck(true);
     }
   };
 
   const handleMarriageResponse = () => {
     // Either way, proceed (it's a joke after all)
+    setShowMarriageCheck(false);
     onComplete(true);
   };
 
