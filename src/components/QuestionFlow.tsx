@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { QUESTIONS, Question } from '../types';
+import { useState, useMemo } from 'react';
+import { getRandomQuestions, Question } from '../types';
 
 interface QuestionFlowProps {
   onComplete: (wantsTreatment: boolean) => void;
 }
 
 export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
+  // Randomly select up to 5 questions once when component mounts
+  const selectedQuestions = useMemo(() => getRandomQuestions(), []);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [showFirstQuestion, setShowFirstQuestion] = useState(true);
 
@@ -25,7 +27,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
       onComplete(true);
     } else {
       // User still chooses no, go to next question
-      if (currentQuestionIndex < QUESTIONS.length - 1) {
+      if (currentQuestionIndex < selectedQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
         // Last question done, proceed to results anyway (still false)
@@ -63,7 +65,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
     );
   }
 
-  const currentQuestion: Question = QUESTIONS[currentQuestionIndex];
+  const currentQuestion: Question = selectedQuestions[currentQuestionIndex];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
@@ -89,7 +91,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
         </div>
         
         <p className="text-sm text-gray-500">
-          Question {currentQuestionIndex + 1} of {QUESTIONS.length}
+          Question {currentQuestionIndex + 1} of {selectedQuestions.length}
         </p>
       </div>
     </div>
