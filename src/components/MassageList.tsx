@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Place, PlaceWithDistance, searchThaiMassagePlaces, calculateDistance } from '../utils/placesApi';
+import { PlaceWithDistance, searchThaiMassagePlaces, calculateDistance } from '../utils/placesApi';
 import { MassageCard } from './MassageCard';
 import { RouteSelector } from './RouteSelector';
 

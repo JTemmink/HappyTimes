@@ -62,7 +62,7 @@ const extractVicinity = (displayName: string): string => {
 export const searchThaiMassagePlaces = async (
   latitude: number,
   longitude: number,
-  radius: number = 5000
+  _radius: number = 5000
 ): Promise<Place[]> => {
   // Nominatim search met bounding box voor radius filtering
   // We maken een bbox van ongeveer 5km rond de locatie
