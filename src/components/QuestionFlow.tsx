@@ -10,10 +10,17 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   const selectedQuestions = useMemo(() => getRandomQuestions(), []);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [showFirstQuestion, setShowFirstQuestion] = useState(true);
+  const [showPermissionCheck, setShowPermissionCheck] = useState(false);
+  const [showMarriageCheck, setShowMarriageCheck] = useState(false);
+
+  const handlePositiveResponse = () => {
+    // When user says yes, show permission check first
+    setShowPermissionCheck(true);
+  };
 
   const handleFirstQuestion = (wants: boolean) => {
     if (wants) {
-      onComplete(true);
+      handlePositiveResponse();
     } else {
       setShowFirstQuestion(false);
       setCurrentQuestionIndex(0);
@@ -23,8 +30,8 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
   const handleFollowUpQuestion = (isOption1: boolean) => {
     // Option 1 is always the "yes" variant, option 2 is always the "no" variant
     if (isOption1) {
-      // User chooses treatment (yes variant)
-      onComplete(true);
+      // User chooses treatment (yes variant) - show permission check
+      handlePositiveResponse();
     } else {
       // User still chooses no, go to next question
       if (currentQuestionIndex < selectedQuestions.length - 1) {
@@ -35,6 +42,87 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
       }
     }
   };
+
+  const handlePermissionResponse = (hasPermission: boolean) => {
+    if (hasPermission) {
+      // Has permission, proceed
+      onComplete(true);
+    } else {
+      // Didn't ask, show marriage check
+      setShowMarriageCheck(true);
+    }
+  };
+
+  const handleMarriageResponse = () => {
+    // Either way, proceed (it's a joke after all)
+    onComplete(true);
+  };
+
+  // Show permission check screen
+  if (showPermissionCheck) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="thai-card thai-pattern max-w-md w-full text-center space-y-8">
+          <div className="space-y-4 relative z-10">
+            <h1 className="thai-title text-5xl mb-6 font-thai-title">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
+            <div className="relative">
+              <p className="text-3xl font-bold text-thai-red mb-4 animate-pulse-glow">
+                JOVAN!! Do you have written permission from Nonoy?!!
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => handlePermissionResponse(true)}
+              className="thai-button-primary text-xl"
+            >
+              YES OF COURSE!!
+            </button>
+            <button
+              onClick={() => handlePermissionResponse(false)}
+              className="thai-button-secondary text-xl"
+            >
+              ... didn't really ask..
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show marriage check screen
+  if (showMarriageCheck) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="thai-card thai-pattern max-w-md w-full text-center space-y-8">
+          <div className="space-y-4 relative z-10">
+            <h1 className="thai-title text-5xl mb-6 font-thai-title">🌸 Jovan 🌸 Happy Times Thai Massage Finder</h1>
+            <div className="relative">
+              <p className="text-3xl font-bold text-thai-red mb-4 animate-pulse-glow">
+                JOVAN!!! THAT REALLY CAN'T BE. YOU'RE MARRIED
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={handleMarriageResponse}
+              className="thai-button-primary text-xl"
+            >
+              Oh yes
+            </button>
+            <button
+              onClick={handleMarriageResponse}
+              className="thai-button-secondary text-xl"
+            >
+              If you don't say anything, then neither will I
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (showFirstQuestion) {
     return (
