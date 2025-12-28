@@ -18,9 +18,9 @@ export const generateMassageDescription = async (
 
   const systemPrompt = wantsTreatment
     ? `You are a witty and humorous writer creating a funny, cheeky description for a Thai massage place. Make it entertaining and playful, with subtle innuendos about the "Happy New Years treatment". Keep it lighthearted and fun, around 2-3 sentences.`
-    : `You are a witty and humorous writer creating a funny, cheeky description for a Thai massage place. Write it as if the person wants the "Happy New Years treatment" (with playful innuendos), BUT you must mark any spicy/suggestive words or phrases by wrapping them with <strike> tags like <strike>word</strike> so they can be displayed as strikethrough text. Keep it lighthearted and fun, around 2-3 sentences.`;
+    : `You are a witty and humorous writer creating a funny description for a Thai massage place. The customer has EXPLICITLY DECLINED the "Happy New Years treatment" multiple times. Write a humorous description that playfully acknowledges this refusal, perhaps starting with something like "CERTAINLY NOT looking for a happy treatment..." and then list things they might encounter with those things wrapped in <strike> tags like <strike>this</strike> to show they're crossed out. Be witty and fun, around 2-3 sentences.`;
 
-  const userPrompt = `Create a funny, entertaining description for a Thai massage place called "${placeName}". ${wantsTreatment ? 'The customer wants the "Happy New Years treatment" so be playful about it.' : 'Write it as if the customer wants the "Happy New Years treatment", but mark any spicy/suggestive content with <strike> tags.'}`;
+  const userPrompt = `Create a funny, entertaining description for a Thai massage place called "${placeName}". ${wantsTreatment ? 'The customer wants the "Happy New Years treatment" so be playful about it.' : 'The customer has repeatedly said NO to the "Happy New Years treatment". Write a humorous description that acknowledges this refusal, maybe starting with "CERTAINLY NOT..." and list things they might encounter (wrap those in <strike> tags). Make it clear they only want a regular massage.'}`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
