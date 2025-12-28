@@ -58,6 +58,40 @@ const extractVicinity = (displayName: string): string => {
   return displayName;
 };
 
+// Helper function to search with a specific query
+const searchWithQuery = async (
+  query: string,
+  bbox: string,
+  latitude: number,
+  longitude: number
+): Promise<Array<NominatimResult & { distance: number }>> => {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=50&bounded=1&viewbox=${bbox}&bzoom=10&addressdetails=1`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'HappyTimes/1.0 (Thai Massage Finder)',
+      },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data: NominatimResult[] = await response.json();
+    
+    return data.map((result) => {
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+      const distance = calculateDistance(latitude, longitude, lat, lng);
+      return { ...result, distance };
+    });
+  } catch (error) {
+    console.error(`Error searching for "${query}":`, error);
+    return [];
+  }
+};
+
 // Search using OpenStreetMap Nominatim API (completely free, no key needed)
 export const searchThaiMassagePlaces = async (
   latitude: number,
@@ -66,7 +100,7 @@ export const searchThaiMassagePlaces = async (
 ): Promise<Place[]> => {
   // Nominatim search with bounding box for radius filtering
   // Convert km to approximate degrees (1 degree ≈ 111 km)
-  const bboxSize = (radiusKm / 111) * 1.2; // Add 20% buffer for better results
+  const bboxSize = (radiusKm / 111) * 1.3; // Add 30% buffer for better results
   
   const bbox = [
     longitude - bboxSize, // min lon
@@ -75,54 +109,88 @@ export const searchThaiMassagePlaces = async (
     latitude + bboxSize,  // max lat
   ].join(',');
 
-  // Search for "thai massage" nearby
-  const query = 'thai massage';
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=100&bounded=1&viewbox=${bbox}&bzoom=10&addressdetails=1`;
+  // Search with multiple queries to get more results
+  const searchQueries = [
+    'thai massage',
+    'massage',
+    'spa',
+    'thai spa',
+    'wellness center',
+    'body massage',
+    'relaxation center'
+  ];
 
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'HappyTimes/1.0 (Thai Massage Finder)', // Nominatim requires User-Agent
-      },
-    });
+  // Search with all queries in parallel
+  const allResults = await Promise.all(
+    searchQueries.map(query => searchWithQuery(query, bbox, latitude, longitude))
+  );
 
-    if (!response.ok) {
-      throw new Error('Unable to connect to search service');
+  // Combine and deduplicate results by place_id
+  const resultMap = new Map<number, NominatimResult & { distance: number }>();
+  
+  allResults.flat().forEach((result) => {
+    const existing = resultMap.get(result.place_id);
+    // Keep the result with the closest match to "thai massage" or the closest distance
+    if (!existing || result.name?.toLowerCase().includes('thai') || result.distance < existing.distance) {
+      resultMap.set(result.place_id, result);
     }
+  });
 
-    const data: NominatimResult[] = await response.json();
+  // Filter for Thai massage related places and convert to Place format
+  const places: Place[] = Array.from(resultMap.values())
+    .filter((result) => {
+      const distance = result.distance;
+      if (distance > radiusKm) return false;
+      
+      // Filter for massage/spa related places
+      const name = (result.name || '').toLowerCase();
+      const displayName = result.display_name.toLowerCase();
+      const type = result.type?.toLowerCase() || '';
+      
+      // Check if it's massage/spa/wellness related
+      const isMassageRelated = 
+        name.includes('massage') ||
+        name.includes('spa') ||
+        name.includes('wellness') ||
+        name.includes('thai') ||
+        displayName.includes('massage') ||
+        displayName.includes('spa') ||
+        type.includes('spa') ||
+        type.includes('massage');
+      
+      return isMassageRelated;
+    })
+    .map((result) => {
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+      const distance = result.distance;
 
-    // Convert Nominatim results to Place format
-    const places: Place[] = data
-      .map((result) => {
-        const lat = parseFloat(result.lat);
-        const lng = parseFloat(result.lon);
-        const distance = calculateDistance(latitude, longitude, lat, lng);
-
-        return {
-          place_id: result.place_id.toString(),
-          name: result.name || result.display_name.split(',')[0] || 'Thai Massage',
-          rating: 0, // Nominatim doesn't have ratings, we use 0
-          user_ratings_total: 0,
-          vicinity: extractVicinity(result.display_name),
-          geometry: {
-            location: {
-              lat,
-              lng,
-            },
+      return {
+        place_id: result.place_id.toString(),
+        name: result.name || result.display_name.split(',')[0] || 'Massage',
+        rating: 0,
+        user_ratings_total: 0,
+        vicinity: extractVicinity(result.display_name),
+        geometry: {
+          location: {
+            lat,
+            lng,
           },
-          distance, // Temporary for filtering
-        };
-      })
-      .filter((place) => place.distance <= radiusKm) // Filter by radius
-      .sort((a, b) => a.distance - b.distance)
-      .map(({ distance, ...place }) => place); // Remove distance from final result
+        },
+        distance, // Temporary for filtering
+      };
+    })
+    .sort((a, b) => {
+      // Sort by: Thai massage first, then by distance
+      const aIsThai = a.name.toLowerCase().includes('thai');
+      const bIsThai = b.name.toLowerCase().includes('thai');
+      if (aIsThai && !bIsThai) return -1;
+      if (!aIsThai && bIsThai) return 1;
+      return a.distance - b.distance;
+    })
+    .map(({ distance, ...place }) => place); // Remove distance from final result
 
-    return places;
-  } catch (error) {
-    console.error('Error fetching places:', error);
-    throw new Error('Something went wrong while searching for massage places. Please try again later.');
-  }
+  return places;
 };
 
 // Use free routing via external services
