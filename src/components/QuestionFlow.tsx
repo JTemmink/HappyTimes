@@ -152,7 +152,7 @@ export const QuestionFlow = ({ onComplete }: QuestionFlowProps) => {
               onClick={handleMarriageResponse}
               className="thai-button-secondary text-xl"
             >
-              If you don't say anything, then neither will I
+              No, It's me, Goran! I can do what I want!
             </button>
           </div>
         </div>
